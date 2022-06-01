@@ -11,7 +11,6 @@
 	let answerInput: HTMLInputElement;
 	let answerArea: HTMLElement;
 	let resultsArea: HTMLElement;
-	let button: HTMLButtonElement;
 
 	let isCorrect: boolean = false;
 
@@ -27,29 +26,50 @@
 		answerInput.focus();
 	});
 
-	async function displayAnswer() {
-		if (button.textContent === 'Check Answer') {
-			if (answer.toLowerCase() === question.code.toLowerCase()) {
-				isCorrect = true;
-				$counter++;
-			} else {
-				isCorrect = false;
-				$counter = 0;
-				mdnURL = MDN + question.code.slice(0, 3);
-			}
-			button.textContent = 'Try Another';
-			resultsArea.style.display = 'grid';
-			answerArea.style.display = 'none';
+	async function checkAnswer() {
+		if (answer.toLowerCase() === question.code.toLowerCase()) {
+			isCorrect = true;
+			$counter++;
 		} else {
-			button.textContent = 'Check Answer';
-			resultsArea.style.display = 'none';
-			answerArea.style.display = 'block';
-			await goto('/quiz');
-			await invalidate('/quiz');
-			answer = '';
-			// MDN = MDN.slice(0, -3);
+			isCorrect = false;
+			$counter = 0;
+			mdnURL = MDN + question.code.slice(0, 3);
 		}
+		resultsArea.style.display = 'grid';
+		answerArea.style.display = 'none';
 	}
+
+	async function tryAnother() {
+		resultsArea.style.display = 'none';
+		answerArea.style.display = 'block';
+		await goto('/quiz');
+		await invalidate('/quiz');
+		answer = '';
+	}
+
+	// async function displayAnswer() {
+	// 	if (button.textContent === 'Check Answer') {
+	// 		if (answer.toLowerCase() === question.code.toLowerCase()) {
+	// 			isCorrect = true;
+	// 			$counter++;
+	// 		} else {
+	// 			isCorrect = false;
+	// 			$counter = 0;
+	// 			mdnURL = MDN + question.code.slice(0, 3);
+	// 		}
+	// 		button.textContent = 'Try Another';
+	// 		resultsArea.style.display = 'grid';
+	// 		answerArea.style.display = 'none';
+	// 	} else {
+	// 		button.textContent = 'Check Answer';
+	// 		resultsArea.style.display = 'none';
+	// 		answerArea.style.display = 'block';
+	// 		await goto('/quiz');
+	// 		await invalidate('/quiz');
+	// 		answer = '';
+	// 		// MDN = MDN.slice(0, -3);
+	// 	}
+	// }
 </script>
 
 <div class="container">
@@ -74,8 +94,11 @@
 			name="code"
 			bind:this={answerInput}
 		/>
+		<div class="button">
+			<button on:click={checkAnswer} class="nes-btn is-warning">Check Answer</button>
+		</div>
 	</section>
-	<section bind:this={resultsArea} class="results">
+	<section class="results" bind:this={resultsArea}>
 		<div class="nes-balloon from-right">
 			{#if isCorrect}
 				<div>
@@ -105,12 +128,10 @@
 				</div>
 			{/if}
 		</div>
+		<div class="button">
+			<button on:click={tryAnother} class="nes-btn is-warning">Try Another</button>
+		</div>
 	</section>
-	<div class="button">
-		<button on:click={displayAnswer} bind:this={button} class="nes-btn is-warning"
-			>Check Answer</button
-		>
-	</div>
 </div>
 
 <style>
@@ -123,7 +144,7 @@
 	}
 	.container {
 		display: grid;
-		grid-template-rows: 1fr 35vh 15vh;
+		grid-template-rows: 50vh 1fr;
 		height: 100%;
 		font-size: 14px;
 	}
@@ -131,7 +152,6 @@
 		display: none;
 	}
 	.description {
-		display: grid;
 		margin: 0.5rem 0.5rem 0 0.5rem;
 	}
 	.nes-container {
@@ -161,7 +181,6 @@
 	}
 
 	.button {
-		margin-top: auto;
 		display: grid;
 		place-items: center;
 		padding: 1rem;
