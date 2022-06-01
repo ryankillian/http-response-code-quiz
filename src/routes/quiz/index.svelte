@@ -135,6 +135,7 @@
 		margin: 0.5rem 0.5rem 0 0.5rem;
 	}
 	.nes-container {
+		border-image-repeat: stretch;
 		padding-left: 0;
 		padding-right: 0;
 	}
