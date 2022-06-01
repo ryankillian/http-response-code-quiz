@@ -1,5 +1,18 @@
-<script lang="ts">
+<script context="module" lang="ts">
 	import { MDN } from '$lib/constants';
+	import type { Load } from '@sveltejs/kit';
+	import PageTransitions from '../components/PageTransitions.svelte';
+	export const load: Load = async ({ url }) => {
+		return {
+			props: {
+				key: url.pathname
+			}
+		};
+	};
+</script>
+
+<script lang="ts">
+	export let key: string;
 </script>
 
 <div class="big-container">
@@ -35,9 +48,9 @@
 			</a>
 		</div>
 	</section>
-
-	<slot />
-
+	<PageTransitions refresh={key}>
+		<slot />
+	</PageTransitions>
 	<section class="right-sidebar">
 		<div class="nes-balloon from-left">
 			<a href={`${MDN}103`} target="blank">

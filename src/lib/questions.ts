@@ -9,7 +9,7 @@ const questions: Question[] = [
 	{
 		code: '101 Switching Protocols',
 		description:
-			"The server understands and is willing to comply with the client's request, via the Upgrade message header field (section 14.42), for a change in the application protocol being used on this connection."
+			"The server understands and is willing to comply with the client's request, via the Upgrade message header field, for a change in the application protocol being used on this connection."
 	},
 	{
 		code: '200 OK',
