@@ -4,6 +4,7 @@
 	import { counter } from '$lib/counter';
 	import type { Question } from '$lib/types';
 	import { onMount } from 'svelte';
+	import { fade, fly } from 'svelte/transition';
 
 	export let question: Question;
 
@@ -12,7 +13,8 @@
 	let answerArea: HTMLElement;
 	let resultsArea: HTMLElement;
 
-	let isCorrect: boolean = false;
+	$: isCorrect = false;
+	$: showResults = false;
 
 	let mdnURL: string = '';
 
@@ -27,6 +29,7 @@
 	});
 
 	async function checkAnswer() {
+		showResults = true;
 		if (answer.toLowerCase() === question.code.toLowerCase()) {
 			isCorrect = true;
 			$counter++;
@@ -35,41 +38,14 @@
 			$counter = 0;
 			mdnURL = MDN + question.code.slice(0, 3);
 		}
-		resultsArea.style.display = 'grid';
-		answerArea.style.display = 'none';
 	}
 
 	async function tryAnother() {
-		resultsArea.style.display = 'none';
-		answerArea.style.display = 'block';
+		showResults = false;
+		answer = '';
 		await goto('/quiz');
 		await invalidate('/quiz');
-		answer = '';
 	}
-
-	// async function displayAnswer() {
-	// 	if (button.textContent === 'Check Answer') {
-	// 		if (answer.toLowerCase() === question.code.toLowerCase()) {
-	// 			isCorrect = true;
-	// 			$counter++;
-	// 		} else {
-	// 			isCorrect = false;
-	// 			$counter = 0;
-	// 			mdnURL = MDN + question.code.slice(0, 3);
-	// 		}
-	// 		button.textContent = 'Try Another';
-	// 		resultsArea.style.display = 'grid';
-	// 		answerArea.style.display = 'none';
-	// 	} else {
-	// 		button.textContent = 'Check Answer';
-	// 		resultsArea.style.display = 'none';
-	// 		answerArea.style.display = 'block';
-	// 		await goto('/quiz');
-	// 		await invalidate('/quiz');
-	// 		answer = '';
-	// 		// MDN = MDN.slice(0, -3);
-	// 	}
-	// }
 </script>
 
 <div class="container">
@@ -85,53 +61,58 @@
 			<p>{question.description}</p>
 		</div>
 	</section>
-	<section class="answer" bind:this={answerArea}>
-		<label class="label" for="code">Response Code:</label>
-		<input
-			class="nes-input is-success"
-			bind:value={answer}
-			type="text"
-			name="code"
-			bind:this={answerInput}
-		/>
-		<div class="button">
-			<button on:click={checkAnswer} class="nes-btn is-warning">Check Answer</button>
-		</div>
-	</section>
-	<section class="results" bind:this={resultsArea}>
-		<div class="nes-balloon from-right">
-			{#if isCorrect}
-				<div>
-					<i class="nes-icon trophy is-large" />
-				</div>
-				<div>
-					<p>
-						<strong>Correct!</strong>
-					</p>
-					<p>
-						{$counter} on the trot!
-					</p>
-					{#each [...Array($counter)] as item}
-						<i class="nes-icon is-{mediaQuery.matches ? 'medium' : 'small'} star" />
-					{/each}
-				</div>
-			{:else}
-				<div>
-					<a href={mdnURL} target="blank"><i class="nes-icon close is-large" /></a>
-				</div>
-				<div>
-					<p><strong>Incorrect!</strong></p>
-					<p>
-						The answer was <a class="nes-text is-error" href={MDN} target="blank">{question.code}</a
-						>.
-					</p>
-				</div>
-			{/if}
-		</div>
-		<div class="button">
-			<button on:click={tryAnother} class="nes-btn is-warning">Try Another</button>
-		</div>
-	</section>
+	{#if !showResults}
+		<section class="answer" bind:this={answerArea} in:fly={{ delay: 200, duration: 600 }}>
+			<label class="label" for="code">Response Code:</label>
+			<input
+				class="nes-input is-success"
+				bind:value={answer}
+				type="text"
+				name="code"
+				bind:this={answerInput}
+			/>
+			<div class="button">
+				<button on:click={checkAnswer} class="nes-btn is-warning">Check Answer</button>
+			</div>
+		</section>
+	{/if}
+	{#if showResults}
+		<section class="results" bind:this={resultsArea} in:fade={{ delay: 200, duration: 600 }}>
+			<div class="nes-balloon from-right">
+				{#if isCorrect}
+					<div>
+						<i class="nes-icon trophy is-large" />
+					</div>
+					<div>
+						<p>
+							<strong>Correct!</strong>
+						</p>
+						<p>
+							{$counter} on the trot!
+						</p>
+						{#each [...Array($counter)] as item}
+							<i class="nes-icon is-{mediaQuery.matches ? 'medium' : 'small'} star" />
+						{/each}
+					</div>
+				{:else}
+					<div>
+						<a href={mdnURL} target="blank"><i class="nes-icon close is-large" /></a>
+					</div>
+					<div>
+						<p><strong>Incorrect!</strong></p>
+						<p>
+							The answer was <a class="nes-text is-error" href={MDN} target="blank"
+								>{question.code}</a
+							>.
+						</p>
+					</div>
+				{/if}
+			</div>
+			<div class="button">
+				<button on:click={tryAnother} class="nes-btn is-warning">Try Another</button>
+			</div>
+		</section>
+	{/if}
 </div>
 
 <style>
@@ -175,7 +156,6 @@
 		justify-content: center;
 	}
 	.results {
-		display: none;
 		margin: 0.5rem 0.5rem 0 0.5rem;
 		text-align: center;
 	}
