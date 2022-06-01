@@ -83,6 +83,10 @@
 		margin: 0;
 		background-color: #cacdcd;
 	}
+
+	.nes-balloon {
+		border-image-repeat: stretch;
+	}
 	a {
 		font-size: clamp(0.8rem, 1rem, 1.4rem);
 		color: #212529;

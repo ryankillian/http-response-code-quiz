@@ -139,6 +139,9 @@
 		padding-left: 0;
 		padding-right: 0;
 	}
+	.nes-balloon {
+		border-image-repeat: stretch;
+	}
 	.title {
 		background-color: #cacdcd;
 	}
