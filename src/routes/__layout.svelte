@@ -15,6 +15,9 @@
 	export let key: string;
 </script>
 
+<svelte:head>
+	<title>Response Code Quiz</title>
+</svelte:head>
 <div class="big-container">
 	<section class="left-sidebar">
 		<div class="nes-balloon from-right">
