@@ -143,8 +143,8 @@
 		margin: 0;
 	}
 	.container {
-		display: grid;
-		grid-template-rows: 50vh 1fr;
+		display: flex;
+		flex-direction: column;
 		height: 100%;
 		font-size: 14px;
 	}
